@@ -1,7 +1,8 @@
-const createElement = (parent, tag, text = "", ...classes) => {
+const createElement = (parent, tag, text = "", classes) => {
     const temp = document.createElement(tag);
-    if (classes.length > 0) {
-        classes.forEach((item) => temp.classList.add(item))
+    const classArr = classes.split(" ");
+    if (classArr.length > 0) {
+        classArr.forEach((item) => temp.classList.add(item))
     }
     if (text == "") {
         parent.appendChild(temp)
