@@ -1,6 +1,7 @@
 import DOMUtility from "./utility";
 import './style.css';
 import storageBridge from "./storage";
+import moment from "moment";
 const renderConternt = (parent) => {
     const content = DOMUtility.createElement(parent, "div", "", "grid grid-cols-10");
     renderSide(content);
@@ -107,8 +108,9 @@ const renderPanel = (content, categories, index, side) => {
                 no.setAttribute("aria-hidden", true)
             }
 
-            DOMUtility.createElement(task, "div", data["tasks"][element]["text"], "")
-            const actionsTask = DOMUtility.createElement(task, "div", "", "m-auto flex justify-end gap-5 w-full", "actionsTask")
+            DOMUtility.createElement(task, "div", data["tasks"][element]["text"], "w-5/6")
+            DOMUtility.createElement(task, "div", moment(data["tasks"][element]["date"]).format("dddd MMMM Do YYYY"), "m-auto whitespace-nowrap")
+            const actionsTask = DOMUtility.createElement(task, "div", "", "flex justify-end gap-5 w-1/6")
 
             const editDiv = DOMUtility.createElement(actionsTask, "div", "")
             editDiv.addEventListener("click", (e) => {
@@ -131,7 +133,7 @@ const renderPanel = (content, categories, index, side) => {
         DOMUtility.createElement(panel, "div", "+", "hover:cursor-pointer font-xl font-bold m-2 text-center text-slate-100 p-1 px-3 hover:border-y-stone-400 hover:border-2 hover:border-solid").addEventListener("click", (e) => {
             let newTask = {
                 "text": "text",
-                "date": "2019",
+                "date": moment().format("YYYYMMDD"),
                 "status": true
             };
             storageBridge.createTask(index, newTask)
