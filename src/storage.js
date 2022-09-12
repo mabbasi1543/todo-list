@@ -1,39 +1,33 @@
-let storage = `{
-    "0": {
-      "name": "project1",
-      "tasks": {
-        "0": {
-          "text": "a",
-          "date": "",
-          "status": true
-        },
-        "1": {
-          "text": "b",
-          "date": "",
-          "status": false
-        }
-      }
-    },
-    "1": {
-      "name": "project2",
-      "tasks":{}
-    },
-    "2": {
-      "name": "project3",
-      "tasks":{}
-    },
-    "3": {
-      "name": "project4",
-      "tasks":{}
-    }
+let storageJson = `{
+
   }`
 
+
 const storageBridge = (() => {
-    let categoryIndex = 0;
+    let storageType = "local";
+    let storage = "";
+    if (storageType == "json") {
+        storage = storageJson
+    } else if (storageType == "local") {
+        if (localStorage.todo == null || localStorage.todo == undefined) {
+            localStorage.todo = storageJson;
+            storage = localStorage.todo;
+        } else {
+            storage = localStorage.todo;
+        }
+    }
+    const saveLocal = () => {
+        if (storageType == "local") {
+            localStorage.todo = storage
+        }
+    }
 
     const getData = () => { return JSON.parse(storage) };
 
-    const setData = (input) => { storage = JSON.stringify(input) };
+    const setData = (input) => {
+        storage = JSON.stringify(input)
+        saveLocal()
+    };
 
     const createCategory = (data) => {
         let index = 0;
