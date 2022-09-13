@@ -2,6 +2,7 @@ import DOMUtility from "./utility";
 import './style.css';
 import storageBridge from "./storage";
 import moment from "moment";
+import { Document } from "postcss";
 const renderConternt = (parent) => {
     const content = DOMUtility.createElement(parent, "div", "", "grid grid-cols-10");
     renderSide(content);
@@ -67,21 +68,33 @@ const renderPanel = (content, categories, index, side) => {
         panel = DOMUtility.selectById("panel")
     }
     const header = DOMUtility.createElement(panel, "div", "", "flex justify-between text-slate-100 text-left text-2xl w-full pb-3", "header")
-    DOMUtility.createElement(header, "div", data["name"], "w-fit", "title")
+    const headerText = DOMUtility.createElement(header, "div", data["name"], "w-fit whitespace-nowrap", "title")
     const actionsHeader = DOMUtility.createElement(header, "div", "", "m-auto flex gap-5 justify-end w-full", "actionsHeader")
 
     const editDiv = DOMUtility.createElement(actionsHeader, "div", "")
     editDiv.addEventListener("click", (e) => {
+        headerText.style.visibility = "hidden";
+        actionsHeader.style.visibility = "hidden";
+        const inputDiv = DOMUtility.createElement(header, "form", "", "absolute w-1/3 h-9 bg-transparent", "inputDiv");
+        const inputText = DOMUtility.createElement(inputDiv, "input", "", "w-4/6 rounded-md bg-gray-600 pl-2", "inputText");
+        inputText.value = data["name"]
+        const inputBtn = DOMUtility.createElement(inputDiv, "buttton", "save", "ml-1 px-1 w-fit m-auto rounded-md bg-gray-500 hover:cursor-pointer", "inputBtn");
+        inputBtn.setAttribute("type", "submit")
+        inputBtn.addEventListener("click", (e) => {
+            data["name"] = inputText.value;
+            storageBridge.setCategory(index, data);
+            renderSide(content);
+            renderPanel(content, storageBridge.getData(), index);
 
+        })
     })
 
     DOMUtility.createElement(editDiv, "i", "", "fa-solid fa-pen", "edit")
 
     const deleteDiv = DOMUtility.createElement(actionsHeader, "div", "")
     deleteDiv.addEventListener("click", (e) => {
-        storageBridge.removeCategory(index)
-        renderSide(content)
-
+        storageBridge.removeCategory(index);
+        renderSide(content);
     })
     DOMUtility.createElement(deleteDiv, "i", "", "fa-solid fa-trash")
 
@@ -108,13 +121,34 @@ const renderPanel = (content, categories, index, side) => {
                 no.setAttribute("aria-hidden", true)
             }
 
-            DOMUtility.createElement(task, "div", data["tasks"][element]["text"], "w-5/6")
-            DOMUtility.createElement(task, "div", moment(data["tasks"][element]["date"]).format("dddd MMMM Do YYYY"), "m-auto whitespace-nowrap")
+            const taskText = DOMUtility.createElement(task, "div", data["tasks"][element]["text"], "w-5/6")
+            const taskDate = DOMUtility.createElement(task, "div", moment(data["tasks"][element]["date"]).format("dddd MMMM Do YYYY"), "m-auto whitespace-nowrap")
             const actionsTask = DOMUtility.createElement(task, "div", "", "flex justify-end gap-5 w-1/6")
 
             const editDiv = DOMUtility.createElement(actionsTask, "div", "")
             editDiv.addEventListener("click", (e) => {
+                iconDiv.style.visibility = "hidden";
+                taskText.style.visibility = "hidden";
+                taskDate.style.visibility = "hidden";
+                actionsTask.style.visibility = "hidden";
 
+                const inputDiv = DOMUtility.createElement(task, "form", "", "absolute w-4/6 h-9 bg-transparent", "inputDiv");
+                const inputText = DOMUtility.createElement(inputDiv, "input", "", "w-4/6 rounded-md bg-gray-600 pl-2", "inputText");
+                inputText.value = data["tasks"][element]["text"]
+
+                const inputDate = DOMUtility.createElement(inputDiv, "input", "", "w-1/6 rounded-md bg-gray-600", "inputText");
+                inputDate.value = data["tasks"][element]["date"]
+                inputDate.setAttribute("type", "date")
+                const inputBtn = DOMUtility.createElement(inputDiv, "buttton", "save", "ml-1 px-1 m-auto rounded-md bg-gray-500 hover:cursor-pointer", "inputBtn");
+                inputBtn.setAttribute("type", "submit")
+                console.log(inputDiv)
+                inputBtn.addEventListener("click", (e) => {
+                    data["tasks"][element]["text"] = inputText.value;
+                    data["tasks"][element]["date"] = moment(inputDate.value).format("YYYY-MM-DD");
+                    storageBridge.setTask(index, element, data["tasks"][element]);
+                    renderPanel(content, storageBridge.getData(), index);
+
+                })
             })
 
             DOMUtility.createElement(editDiv, "i", "", "fa-solid fa-pen", "edit")
@@ -133,7 +167,7 @@ const renderPanel = (content, categories, index, side) => {
         DOMUtility.createElement(panel, "div", "+", "hover:cursor-pointer font-xl font-bold m-2 text-center text-slate-100 p-1 px-3 hover:border-y-stone-400 hover:border-2 hover:border-solid").addEventListener("click", (e) => {
             let newTask = {
                 "text": "text",
-                "date": moment().format("YYYYMMDD"),
+                "date": moment().format("YYYY-MM-DD"),
                 "status": true
             };
             storageBridge.createTask(index, newTask)
