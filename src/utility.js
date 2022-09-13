@@ -25,9 +25,9 @@ const DOMUtility = (() => {
     const checkById = (id) => {
         let element = document.getElementById(id)
         if (element != 'undefined' && element != null) {
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
     const selectById = (id) => {
